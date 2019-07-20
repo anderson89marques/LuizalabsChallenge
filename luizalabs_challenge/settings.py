@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'luizalabs_challenge.employee_manager',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

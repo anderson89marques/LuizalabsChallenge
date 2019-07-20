@@ -1,3 +1,10 @@
+from .models import Employee
 from django.contrib import admin
 
-# Register your models here.
+
+class EmployeeAdmin(admin.ModelAdmin):
+    #model = Employee
+    #fields = ('name', 'email', 'department', 'phone',)
+    list_display = ('name', 'email', 'department', 'phone',)
+
+admin.site.register(Employee, EmployeeAdmin)
