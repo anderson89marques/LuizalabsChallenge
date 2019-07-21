@@ -1,5 +1,6 @@
 .cache
 .vscode
 .venv
+.env
 __pycache__
 *.sqlite3
