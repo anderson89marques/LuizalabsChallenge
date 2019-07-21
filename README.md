@@ -41,7 +41,7 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
-- Create a user to access admin panel
+- Create a user to access admin panel and to get token to acess API
 ```console
 python manage.py createsuperuser
 ```
@@ -56,6 +56,36 @@ python manage.py test
 python manage.py runserver
 ```
 
+## Admin Pages
+
+Application has a admin panel to manage employee data:
+
+* `/admin/`
+
+## API Routes
+Employees' data can be created, retrieved or destroyed at API:
+
+* `/api/api-token-auth/` - to get token access
+* `/api/employee/` - to list and create employees
+* `/api/employee/<int:pk>/` - to delete and retrieve a employee
+
+# Authentication
+To Access the API you need create a user and then
+make a POST request to ```/api/api-token-auth/```.
+
+Example:
+```console
+curl -i -X POST http://127.0.0.1:8000/api/api-token-auth/ -d 'username=user_here&password=passw_here'
+```
+
+The response body is the token associated with this particular user. Use this token to make the future requests.
+
+Get employees example:
+```console
+curl  -H "Authorization: Token <token here>"  http://127.0.0.1:8000/api/employee/
+```
+
+
 ### Optional Configuration
 This project use python-decouple. 
 To change debug mode, secret_key and database url you can create environment variables or
@@ -67,19 +97,6 @@ SECRET_KEY=<you secret here>
 DEBUG=True # default is False
 DATABASE_URL=<your-database-url> # default is sqlite3
 ```
-
-
-## Admin Pages
-
-Application has a admin panel to manage employee data:
-
-* `/admin/`
-
-## API Routes
-Employees' data can be created, retrieved or destroyed at API:
-
-* `/api/employee/`
-* `/api/employee/<int:pk>/`
 
 ## Thanks of the Author 
 

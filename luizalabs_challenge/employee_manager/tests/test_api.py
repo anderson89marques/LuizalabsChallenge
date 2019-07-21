@@ -1,15 +1,25 @@
 import json
 
 from django.urls import reverse
-from rest_framework import status
-from rest_framework.test import APITestCase
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+from rest_framework.test import APITestCase
 
 from luizalabs_challenge.employee_manager.models import Employee
 
 
-class EmployeeNewPostValidTest(APITestCase):
+class BaseTestClass(APITestCase):
     def setUp(self):
+        user = User.objects.create_superuser(username='admin', email='a@a', password='passwd89')
+        token = Token.objects.create(user=user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+
+
+class EmployeeNewPostValidTest(BaseTestClass):
+    def setUp(self):
+        super().setUp()
         self.url = reverse('employee-list')
         self.data = create_employee_data()
         self.response = self.client.post(self.url, self.data)
@@ -21,8 +31,9 @@ class EmployeeNewPostValidTest(APITestCase):
         self.assertEqual(Employee.objects.count(), 1)
     
 
-class EmployeeNewPostInvalidTest(APITestCase):
+class EmployeeNewPostInvalidTest(BaseTestClass):
     def setUp(self):
+        super().setUp()
         self.url = reverse('employee-list')
 
     def test_create_employee_invalid_post_status_code(self):
@@ -52,8 +63,9 @@ class EmployeeNewPostInvalidTest(APITestCase):
         self.assertEqual(json.loads(response.content), {'phone': ["Phone number must have this format '(xx) xxxxx-xxxx'."]})
 
 
-class EmployeeListTest(APITestCase):
+class EmployeeListTest(BaseTestClass):
     def setUp(self):
+        super().setUp()
         self.url = reverse('employee-list')
 
     def test_get_employees_status_code(self):
@@ -71,8 +83,9 @@ class EmployeeListTest(APITestCase):
         self.assertDictContainsSubset(data, json.loads(response.content)['results'][0])
 
 
-class EmployeeDeleteTest(APITestCase):
+class EmployeeDeleteTest(BaseTestClass):
     def setUp(self):
+        super().setUp()
         data = create_employee_data()
         employee = Employee.objects.create(**data)
         self.url = reverse('employee-detail', kwargs={'pk':employee.pk})
@@ -82,7 +95,17 @@ class EmployeeDeleteTest(APITestCase):
         self.assertEqual(Employee.objects.count(), 0)
 
 
+class EmployeeTestApiToken(APITestCase):
+    def test_get_token(self):
+        user = User.objects.create_superuser(username='admin', email='a@a', password='passwd89')
+        url = reverse('api_token_auth')
+        response = self.client.post(url, data={'username': 'admin', 'password': 'passwd89'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data['token'])
+        
+
 def create_employee_data(name='Anderson Marques', email='andersonoanjo18@hotmail.com',
                          department='payments',
                          phone='(11) 99274-5052'):
     return dict(name=name,email=email,department=department,phone=phone)
+    
