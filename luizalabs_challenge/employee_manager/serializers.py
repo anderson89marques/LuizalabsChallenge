@@ -1,5 +1,6 @@
-from luizalabs_challenge.employee_manager.models import Employee
 from rest_framework import serializers
+
+from luizalabs_challenge.employee_manager.models import Employee
 
 
 class EmployeeSerializer(serializers.HyperlinkedModelSerializer):

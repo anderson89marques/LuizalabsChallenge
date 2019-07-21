@@ -51,6 +51,11 @@ python manage.py createsuperuser
 python manage.py test
 ```
 
+- Run collectstatic.
+```console
+python manage.py collectstatic
+```
+
 - Run your project.
 ```console
 python manage.py runserver
@@ -69,21 +74,49 @@ Employees' data can be created, retrieved or destroyed at API:
 * `/api/employee/` - to list and create employees
 * `/api/employee/<int:pk>/` - to delete and retrieve a employee
 
-# Authentication
+# Authentication and Requests API examples
 To Access the API you need create a user and then
 make a POST request to ```/api/api-token-auth/```.
 
-Example:
+Get token example:
 ```console
-curl -i -X POST http://127.0.0.1:8000/api/api-token-auth/ -d 'username=user_here&password=passw_here'
+curl -d '{"username": "user_name_here", "password":"passwd_here_"}' -v \
+-H "Content-Type: application/json" \
+-X POST  http://127.0.0.1:8000/api/api-token-auth/
 ```
 
 The response body is the token associated with this particular user. Use this token to make the future requests.
 
 Get employees example:
 ```console
-curl  -H "Authorization: Token <token here>"  http://127.0.0.1:8000/api/employee/
+curl -v \
+-H "Content-Type: application/json" \
+-H "Authorization: Token <token_here>" \
+-X GET  http://127.0.0.1:8000/api/employee/
 ```
+
+Create employee example:
+```console
+curl -d '{"name": "luiza", "email":"luiza@gmail.com","department": "payments","phone": "(11) 99774-5654"}' -v \
+-H "Content-Type: application/json" \
+-H "Authorization: Token <token_here>" \
+-X POST http://127.0.0.1:8000/api/employee/
+```
+
+Delete employee example:
+```console
+curl -v \
+-H "Content-Type: application/json" \
+-H "Authorization: Token <token_here>" \
+-X DELETE  http://127.0.0.1:8000/api/employee/<pk_here>
+```
+
+Retrieve employee example:
+```console
+curl -v \
+-H "Content-Type: application/json" \
+-H "Authorization: Token <token_here>" \
+-X GET http://127.0.0.1:8000/api/employee/<pk_here>
 
 
 ### Optional Configuration
